@@ -17,6 +17,10 @@ export const fetchAllConversationsByUserId = async (req: Request, res: Response)
                         WHEN u1.id = $1 THEN u2.username
                         ELSE u1.username
                     END AS participant_name,
+                    CASE
+                        WHEN u1.id = $1 THEN u2.profile_image
+                        ELSE u1.profile_image
+                    END AS participant_image,
                     m.content AS last_message,
                     m.created_at AS last_message_time
                 FROM conversations c

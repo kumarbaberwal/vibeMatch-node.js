@@ -6,6 +6,12 @@ import { error } from "console";
 
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'secretchugli';
+const randomImages = [
+    'https://i.pinimg.com/736x/58/67/ff/5867ff1964d400c203eee4a98e50c8f6.jpg',
+    'https://i.pinimg.com/736x/84/fc/c3/84fcc3282da548061a1513b3d354d071.jpg',
+    'https://i.pinimg.com/736x/56/85/25/5685259d7ee04e575eb052041ba62de4.jpg',
+    'https://i.pinimg.com/736x/75/6e/50/756e50b386d12e2865c45836d9628e41.jpg'
+]
 
 
 export const register = async (req: Request, res: Response): Promise<any> => {
@@ -13,10 +19,11 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     try {
         const isAlreadyUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if(isAlreadyUser.rows.length > 0) {
+        if (isAlreadyUser.rows.length > 0) {
             return res.status(400).json({ error: "User already exists" });
         }
-        const result = await pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [username, email, hashedPassword]);
+        const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
+        const result = await pool.query('INSERT INTO users (username, email, password, profile_image) VALUES ($1, $2, $3, $4) RETURNING *', [username, email, hashedPassword, randomImage]);
         const user = result.rows[0];
         const token = Jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15d" });
         res.status(201).json({ user: { ...user, token } });
@@ -44,7 +51,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             });
         }
         const token = Jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15d" });
-        res.status(201).json({ user: {...user, token} });
+        res.status(201).json({ user: { ...user, token } });
     }
     catch (error) {
         console.error(error);

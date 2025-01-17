@@ -11,7 +11,7 @@ export const fetchContacts = async (req: Request, res: Response): Promise<any> =
     try {
         const result = await pool.query(
             `
-                SELECT u.id AS contact_id, u.username, u.email
+                SELECT u.id AS contact_id, u.username, u.email, u.profile_image as contact_image
                 FROM contacts c
                 JOIN users u ON u.id = c.contact_id
                 WHERE c.user_id = $1
