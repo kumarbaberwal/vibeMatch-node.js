@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import pool from "../models/db";
 import bcrypt from 'bcrypt';
 import Jwt from "jsonwebtoken";
-import { error } from "console";
 
 const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'secretchugli';
